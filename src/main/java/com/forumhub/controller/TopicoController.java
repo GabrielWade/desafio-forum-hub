@@ -16,10 +16,14 @@ public class TopicoController {
     @Autowired
     private TopicoRepository topicoRepository;
 
+    @Autowired
+    private CriarTopico criarTopico;
+
     @PostMapping
     @Transactional
-    public void cadastrar(@RequestBody @Valid DadosCadastrarTopico dado) {
-        topicoRepository.save(new Topico(dado));
+    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastrarTopico dado) {
+        var dto = criarTopico.criar(dado);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping
@@ -37,7 +41,7 @@ public class TopicoController {
     @Transactional
     public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoTopico dados) {
         var topico = topicoRepository.getReferenceById(dados.id());
-        topico.atualizarInformacoes(dados);
+        criarTopico.atualizarInformacoes(dados, topico.getId());
 
         return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
